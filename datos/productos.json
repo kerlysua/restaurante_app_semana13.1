@@ -1,0 +1,9 @@
+[
+    {
+        "codigo": "P001",
+        "nombre": "Tostadas",
+        "categoria": "Comida",
+        "precio": 2.1,
+        "stock": 5
+    }
+]
