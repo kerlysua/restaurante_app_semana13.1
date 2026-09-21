@@ -1,9 +1,16 @@
 [
     {
-        "codigo": "P001",
-        "nombre": "Tostadas",
-        "categoria": "Comida",
-        "precio": 2.1,
-        "stock": 5
+        "codigo": "002",
+        "nombre": "Juan",
+        "categoria": "aliemnto",
+        "precio": 2.2,
+        "stock": 2
+    },
+    {
+        "codigo": "003",
+        "nombre": "Juan",
+        "categoria": "alimento",
+        "precio": 2.0,
+        "stock": 2
     }
 ]
