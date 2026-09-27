@@ -1,51 +1,58 @@
+from datetime import datetime
+
+
 class Venta:
+
     def __init__(
             self,
-            usuario_id: str,
-            producto_codigo: str,
-            cantidad: int
-    ) -> None:
+            usuario_id,
+            producto_codigo,
+            cantidad,
+            fecha=None
+    ):
 
-        if not usuario_id.strip():
-            raise ValueError("La identificación del usuario no puede estar vacía")
+        self.usuario_id = usuario_id
+        self.producto_codigo = producto_codigo
+        self.cantidad = int(cantidad)
 
-        if not producto_codigo.strip():
-            raise ValueError("El código del producto no puede estar vacío")
+        if fecha is None:
 
-        try:
-            cantidad = int(cantidad)
-        except (TypeError, ValueError):
-            raise ValueError("La cantidad debe ser un número entero")
+            self.fecha = (
+                datetime.now()
+                .strftime("%Y-%m-%d %H:%M:%S")
+            )
 
-        if cantidad <= 0:
-            raise ValueError("La cantidad debe ser mayor que cero")
+        else:
 
-        self.usuario_id = usuario_id.strip()
-        self.producto_codigo = producto_codigo.strip()
-        self.cantidad = cantidad
+            self.fecha = fecha
 
-    def convertir_a_diccionario(self) -> dict:
+    def convertir_a_diccionario(self):
+
         return {
             "usuario_id": self.usuario_id,
             "producto_codigo": self.producto_codigo,
             "cantidad": self.cantidad,
+            "fecha": self.fecha
         }
 
     @classmethod
-    def desde_diccionario(cls, datos: dict):
+    def desde_diccionario(
+            cls,
+            datos
+    ):
+
         return cls(
             datos["usuario_id"],
             datos["producto_codigo"],
-            datos["cantidad"]
+            datos["cantidad"],
+            datos.get("fecha")
         )
 
-    def mostrar_informacion(self) -> str:
+    def __str__(self):
+
         return (
             f"Usuario: {self.usuario_id} | "
             f"Producto: {self.producto_codigo} | "
-            f"Cantidad: {self.cantidad}"
+            f"Cantidad: {self.cantidad} | "
+            f"Fecha: {self.fecha}"
         )
-
-    def __str__(self) -> str:
-        return self.mostrar_informacion()
-

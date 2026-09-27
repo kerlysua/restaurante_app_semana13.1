@@ -5,6 +5,18 @@ class LoginView:
         self.root = root
         self.servicio = servicio
         self.cambiar_a_main = cambiar_a_main
+        self.logo = tk.PhotoImage(
+            file="assets/logoo.png"
+        )
+        self.logo = self.logo.subsample(4, 4)
+
+
+        tk.Label(
+            root,
+            image=self.logo
+        ).pack(
+            pady=1
+        )
 
         tk.Label(root, text="Usuario").pack()
         self.entry_usuario = tk.Entry(root)

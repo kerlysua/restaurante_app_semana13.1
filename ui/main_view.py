@@ -28,6 +28,24 @@ class MainView:
             fill="both",
             expand=True
         )
+        self.icon_producto = tk.PhotoImage(
+            file="assets/producto.png"
+        )
+
+        self.icon_producto = self.icon_producto.subsample(8, 8)
+
+        self.icon_usuario = tk.PhotoImage(
+            file="assets/usario.png"
+        )
+
+        self.icon_usuario = self.icon_usuario.subsample(8, 8)
+
+        self.icon_venta = tk.PhotoImage(
+            file="assets/ventaa.png"
+        )
+
+        self.icon_venta = self.icon_venta.subsample(20, 20)
+
 
         tk.Label(
             panel_menu,
@@ -35,20 +53,29 @@ class MainView:
             bg="#2c3e50",
             fg="white",
             font=("Arial", 14, "bold")
-        ).pack(pady=20)
-
+        ).pack(pady=10)
         tk.Button(
             panel_menu,
-            text="Productos",
-            width=15,
-            command=self.cargar_productos
+            text=" Productos",
+            image=self.icon_producto,
+            compound="left",
+            command=self.mostrar_productos
         ).pack(pady=5)
 
         tk.Button(
             panel_menu,
-            text="Usuarios",
-            width=15,
+            text=" Usuarios",
+            image=self.icon_usuario,
+            compound="left",
             command=self.mostrar_usuarios
+        ).pack(pady=5)
+
+        tk.Button(
+            panel_menu,
+            text=" Ventas",
+            image=self.icon_venta,
+            compound="left",
+            command=self.mostrar_ventas
         ).pack(pady=5)
 
         tk.Button(
@@ -77,6 +104,8 @@ class MainView:
 
         self.codigo = tk.Entry(formulario)
         self.codigo.grid(row=0, column=1)
+
+
 
         # Nombre
         tk.Label(
@@ -419,4 +448,270 @@ class MainView:
                     usuario.identificacion,
                     usuario.nombre
                 )
+            )
+
+    def mostrar_ventas(self):
+
+        ventana = tk.Toplevel(self.root)
+
+        ventana.title("Ventas")
+
+        ventana.geometry("800x500")
+
+        frame_form = tk.LabelFrame(
+            ventana,
+            text="Registrar Venta"
+        )
+
+        frame_form.pack(
+            fill="x",
+            padx=10,
+            pady=10
+        )
+
+        tk.Label(
+            frame_form,
+            text="Usuario"
+        ).grid(
+            row=0,
+            column=0,
+            padx=5,
+            pady=5
+        )
+
+        self.combo_usuario = ttk.Combobox(
+            frame_form,
+            state="readonly"
+        )
+
+        self.combo_usuario.grid(
+            row=0,
+            column=1,
+            padx=5,
+            pady=5
+        )
+
+        usuarios = self.servicio.listar_usuarios()
+
+        self.combo_usuario["values"] = [
+            usuario.identificacion
+            for usuario in usuarios
+        ]
+
+        tk.Label(
+            frame_form,
+            text="Producto"
+        ).grid(
+            row=1,
+            column=0,
+            padx=5,
+            pady=5
+        )
+
+        self.combo_producto_venta = ttk.Combobox(
+            frame_form,
+            state="readonly"
+        )
+
+        self.combo_producto_venta.grid(
+            row=1,
+            column=1,
+            padx=5,
+            pady=5
+        )
+
+        productos = self.servicio.listar_productos()
+
+        self.combo_producto_venta["values"] = [
+            producto.codigo
+            for producto in productos
+        ]
+
+        tk.Label(
+            frame_form,
+            text="Cantidad"
+        ).grid(
+            row=2,
+            column=0,
+            padx=5,
+            pady=5
+        )
+
+        self.entry_cantidad = tk.Entry(
+            frame_form
+        )
+
+        self.entry_cantidad.grid(
+            row=2,
+            column=1,
+            padx=5,
+            pady=5
+        )
+
+        tabla_ventas = ttk.Treeview(
+            ventana,
+            columns=(
+                "usuario",
+                "producto",
+                "cantidad",
+                "fecha"
+            ),
+            show="headings"
+        )
+
+        tabla_ventas.heading(
+            "usuario",
+            text="Usuario"
+        )
+
+        tabla_ventas.heading(
+            "producto",
+            text="Producto"
+        )
+
+        tabla_ventas.heading(
+            "cantidad",
+            text="Cantidad"
+        )
+
+        tabla_ventas.heading(
+            "fecha",
+            text="Fecha"
+        )
+
+        tabla_ventas.pack(
+            fill="both",
+            expand=True,
+            padx=10,
+            pady=10
+        )
+
+        tk.Button(
+            frame_form,
+            text="Registrar Venta",
+            bg="green",
+            fg="white",
+            command=lambda: self.registrar_venta(
+                tabla_ventas
+            )
+        ).grid(
+            row=3,
+            column=0,
+            columnspan=2,
+            pady=10
+        )
+
+        self.cargar_ventas(
+            tabla_ventas
+        )
+
+    def mostrar_productos(self):
+
+        ventana = tk.Toplevel(self.root)
+
+        ventana.title("Productos")
+
+        ventana.geometry("700x300")
+
+        tabla = ttk.Treeview(
+            ventana,
+            columns=(
+                "codigo",
+                "nombre",
+                "categoria",
+                "precio",
+                "stock"
+            ),
+            show="headings"
+        )
+
+        tabla.heading("codigo", text="Código")
+        tabla.heading("nombre", text="Nombre")
+        tabla.heading("categoria", text="Categoría")
+        tabla.heading("precio", text="Precio")
+        tabla.heading("stock", text="Stock")
+
+        tabla.pack(
+            fill="both",
+            expand=True
+        )
+
+        for producto in self.servicio.listar_productos():
+            tabla.insert(
+                "",
+                tk.END,
+                values=(
+                    producto.codigo,
+                    producto.nombre,
+                    producto.categoria,
+                    producto.precio,
+                    producto.stock
+                )
+            )
+
+    def cargar_ventas(self, tabla):
+
+        for fila in tabla.get_children():
+            tabla.delete(fila)
+
+        ventas = self.servicio.listar_ventas()
+
+        for venta in ventas:
+            tabla.insert(
+                "",
+                tk.END,
+                values=(
+                    venta.usuario_id,
+                    venta.producto_codigo,
+                    venta.cantidad,
+                    venta.fecha
+                )
+            )
+
+    def registrar_venta(
+            self,
+            tabla_ventas
+    ):
+
+        try:
+
+            usuario = (
+                self.combo_usuario.get()
+            )
+
+            producto = (
+                self.combo_producto_venta.get()
+            )
+
+            cantidad = int(
+                self.entry_cantidad.get()
+            )
+
+            self.servicio.registrar_venta(
+                usuario,
+                producto,
+                cantidad
+            )
+
+            self.cargar_ventas(
+                tabla_ventas
+            )
+
+            self.cargar_productos()
+
+            self.entry_cantidad.delete(
+                0,
+                tk.END
+            )
+
+            messagebox.showinfo(
+                "Éxito",
+                "Venta registrada correctamente"
+            )
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Error",
+                str(e)
             )

@@ -4,7 +4,7 @@
         "nombre": "Juan",
         "categoria": "aliemnto",
         "precio": 2.2,
-        "stock": 2
+        "stock": 0
     },
     {
         "codigo": "003",
