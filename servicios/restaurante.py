@@ -191,6 +191,33 @@ class Restaurante:
             codigo
         )
 
+    def actualizar_producto(
+            self,
+            codigo,
+            nombre,
+            categoria,
+            precio,
+            stock
+    ):
+
+        producto = self.buscar_producto(
+            codigo
+        )
+
+        if producto is None:
+            raise ValueError(
+                "Producto no encontrado"
+            )
+
+        producto.nombre = nombre
+        producto.categoria = categoria
+        producto.precio = float(precio)
+        producto.stock = int(stock)
+
+        self.archivo_servicio.guardar_productos(
+            self._productos
+        )
+
     def listar_productos(self):
 
         return self._productos

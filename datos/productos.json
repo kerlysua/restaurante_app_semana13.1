@@ -11,6 +11,13 @@
         "nombre": "Juan",
         "categoria": "alimento",
         "precio": 2.0,
-        "stock": 2
+        "stock": 0
+    },
+    {
+        "codigo": "004",
+        "nombre": "yc",
+        "categoria": "ggh",
+        "precio": 5.0,
+        "stock": 5
     }
 ]

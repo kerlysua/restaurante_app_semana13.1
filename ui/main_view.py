@@ -13,6 +13,16 @@ class MainView:
         self.crear_interfaz()
         self.cargar_productos()
 
+        self.root.bind(
+            "<Return>",
+            self.evento_enter
+        )
+
+        self.root.bind(
+            "<Escape>",
+            self.evento_escape
+        )
+
     def crear_interfaz(self):
 
         panel_menu = tk.Frame(
@@ -413,7 +423,30 @@ class MainView:
         ventana = tk.Toplevel(self.root)
 
         ventana.title("Usuarios")
-        ventana.geometry("500x300")
+        ventana.geometry("600x400")
+
+        tk.Label(
+            ventana,
+            text="Rol"
+        ).pack(pady=5)
+
+        self.combo_rol = ttk.Combobox(
+            ventana,
+            state="readonly"
+        )
+
+        self.combo_rol["values"] = (
+            "Administrador",
+            "Cajero",
+            "Supervisor"
+        )
+
+        self.combo_rol.pack(pady=5)
+
+        self.combo_rol.bind(
+            "<<ComboboxSelected>>",
+            self.cambio_rol
+        )
 
         tabla = ttk.Treeview(
             ventana,
@@ -439,8 +472,14 @@ class MainView:
             expand=True
         )
 
-        for usuario in self.servicio.listar_usuarios():
+        tabla.bind(
+            "<<TreeviewSelect>>",
+            self.seleccionar_usuario
+        )
 
+        self.tabla_usuarios = tabla
+
+        for usuario in self.servicio.listar_usuarios():
             tabla.insert(
                 "",
                 tk.END,
@@ -449,7 +488,6 @@ class MainView:
                     usuario.nombre
                 )
             )
-
     def mostrar_ventas(self):
 
         ventana = tk.Toplevel(self.root)
@@ -675,13 +713,9 @@ class MainView:
 
         try:
 
-            usuario = (
-                self.combo_usuario.get()
-            )
+            usuario = self.combo_usuario.get()
 
-            producto = (
-                self.combo_producto_venta.get()
-            )
+            producto = self.combo_producto_venta.get()
 
             cantidad = int(
                 self.entry_cantidad.get()
@@ -714,4 +748,59 @@ class MainView:
             messagebox.showerror(
                 "Error",
                 str(e)
+            )
+
+    def cambio_rol(self, event):
+
+        rol = self.combo_rol.get()
+
+        messagebox.showinfo(
+            "Rol seleccionado",
+            rol
+        )
+
+    def evento_enter(self, event):
+
+        messagebox.showinfo(
+            "Evento",
+            "ENTER presionado"
+        )
+
+    def evento_escape(self, event):
+
+        try:
+
+            self.limpiar_campos()
+
+            if hasattr(
+                    self,
+                    "tabla_usuarios"
+            ):
+                self.tabla_usuarios.selection_remove(
+                    self.tabla_usuarios.selection()
+                )
+
+        except:
+            pass
+
+    def seleccionar_usuario(self, event):
+
+        seleccion = event.widget.selection()
+
+        if not seleccion:
+            return
+
+        identificacion = event.widget.item(
+            seleccion[0]
+        )["values"][0]
+
+        usuario = self.servicio.buscar_usuario(
+            str(identificacion)
+        )
+
+        if usuario:
+            messagebox.showinfo(
+                "Usuario seleccionado",
+                f"ID: {usuario.identificacion}\n"
+                f"Nombre: {usuario.nombre}"
             )
